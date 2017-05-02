@@ -1,12 +1,11 @@
 ﻿using Net.Chdk.Model.Software;
 using Net.Chdk.Providers.Boot;
+using Net.Chdk.Providers.Crypto;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Net.Chdk.Validators.Software
 {
@@ -15,10 +14,12 @@ namespace Net.Chdk.Validators.Software
         private static readonly string[] SecureHashes = new[] { "sha256", "sha384", "sha512" };
 
         private IBootProvider BootProvider { get; }
+        private IHashProvider HashProvider { get; }
 
-        public SoftwareValidator(IBootProvider bootProvider)
+        public SoftwareValidator(IBootProvider bootProvider, IHashProvider hashProvider)
         {
             BootProvider = bootProvider;
+            HashProvider = hashProvider;
         }
 
         public void Validate(SoftwareInfo software, string basePath)
@@ -165,30 +166,12 @@ namespace Net.Chdk.Validators.Software
                 if (!File.Exists(filePath))
                     return false;
 
-                var hashString = GetHashString(filePath, hashName);
+                var hashString = HashProvider.GetHashString(filePath, hashName);
                 if (!hashString.Equals(kvp.Value))
                     return false;
             }
 
             return true;
-        }
-
-        private static string GetHashString(string filePath, string hashName)
-        {
-            var hash = ComputeHash(filePath, hashName);
-            var sb = new StringBuilder(hash.Length * 2);
-            for (int i = 0; i < hash.Length; i++)
-                sb.Append(hash[i].ToString("x2"));
-            return sb.ToString();
-        }
-
-        private static byte[] ComputeHash(string filePath, string hashName)
-        {
-            var hashAlgorithm = HashAlgorithm.Create(hashName);
-            using (var stream = File.OpenRead(filePath))
-            {
-                return hashAlgorithm.ComputeHash(stream);
-            }
         }
     }
 }
