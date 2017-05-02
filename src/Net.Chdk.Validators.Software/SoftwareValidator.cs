@@ -1,4 +1,5 @@
 ﻿using Net.Chdk.Model.Software;
+using Net.Chdk.Providers.Boot;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,6 +13,13 @@ namespace Net.Chdk.Validators.Software
     sealed class SoftwareValidator : IValidator<SoftwareInfo>
     {
         private static readonly string[] SecureHashes = new[] { "sha256", "sha384", "sha512" };
+
+        private IBootProvider BootProvider { get; }
+
+        public SoftwareValidator(IBootProvider bootProvider)
+        {
+            BootProvider = bootProvider;
+        }
 
         public void Validate(SoftwareInfo software, string basePath)
         {
@@ -118,7 +126,7 @@ namespace Net.Chdk.Validators.Software
                 throw new ValidationException("Missing source url");
         }
 
-        private static void Validate(SoftwareHashInfo hash, string basePath)
+        private void Validate(SoftwareHashInfo hash, string basePath)
         {
             if (hash == null)
                 throw new ValidationException("Null hash");
@@ -133,12 +141,15 @@ namespace Net.Chdk.Validators.Software
                 throw new ValidationException("Mismatching hash");
         }
 
-        private static bool Validate(IDictionary<string, string> hashValues, string hashName, string basePath)
+        private bool Validate(IDictionary<string, string> hashValues, string hashName, string basePath)
         {
             if (hashValues == null)
                 return false;
 
             if (hashValues.Count == 0)
+                return false;
+
+            if (!hashValues.Keys.Contains(BootProvider.FileName, StringComparer.InvariantCultureIgnoreCase))
                 return false;
 
             foreach (var kvp in hashValues)
