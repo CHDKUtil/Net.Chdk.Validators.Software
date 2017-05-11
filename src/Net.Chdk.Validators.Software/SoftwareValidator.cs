@@ -166,12 +166,20 @@ namespace Net.Chdk.Validators.Software
                 if (!File.Exists(filePath))
                     return false;
 
-                var hashString = HashProvider.GetHashString(filePath, hashName);
+                var hashString = GetHashString(filePath, hashName);
                 if (!hashString.Equals(kvp.Value))
                     return false;
             }
 
             return true;
+        }
+
+        private string GetHashString(string filePath, string hashName)
+        {
+            using (var stream = File.OpenRead(filePath))
+            {
+                return HashProvider.GetHashString(stream, hashName);
+            }
         }
     }
 }
