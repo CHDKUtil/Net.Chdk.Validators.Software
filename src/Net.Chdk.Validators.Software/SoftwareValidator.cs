@@ -59,9 +59,6 @@ namespace Net.Chdk.Validators.Software
             if (product.Version.Major < 0 || product.Version.Minor < 0)
                 throw new ValidationException("Invalid product version");
 
-            if (product.Version.MajorRevision < 0 || product.Version.MinorRevision < 0)
-                throw new ValidationException("Invalid product version");
-
             if (product.Created == null)
                 throw new ValidationException("Null product created");
 
@@ -120,7 +117,7 @@ namespace Net.Chdk.Validators.Software
             if (string.IsNullOrEmpty(source.Name))
                 throw new ValidationException("Missing source name");
 
-            if (string.IsNullOrEmpty(source.Channel))
+            if (source.Channel == null)
                 throw new ValidationException("Missing source channel");
 
             if (source.Url == null)
