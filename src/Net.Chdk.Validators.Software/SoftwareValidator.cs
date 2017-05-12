@@ -62,7 +62,7 @@ namespace Net.Chdk.Validators.Software
             if (product.Created == null)
                 throw new ValidationException("Null product created");
 
-            if (product.Created.Value < new DateTime(2000, 1, 1) || product.Created.Value > DateTime.UtcNow)
+            if (product.Created.Value < new DateTime(2000, 1, 1) || product.Created.Value > DateTime.Now)
                 throw new ValidationException("Invalid product created");
 
             if (product.Language == null)
