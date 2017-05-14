@@ -33,6 +33,7 @@ namespace Net.Chdk.Validators.Software
             Validate(software.Build);
             Validate(software.Compiler);
             Validate(software.Source);
+            Validate(software.Encoding);
             Validate(software.Hash, basePath);
         }
 
@@ -122,6 +123,19 @@ namespace Net.Chdk.Validators.Software
 
             if (source.Url == null)
                 throw new ValidationException("Missing source url");
+        }
+
+        private void Validate(SoftwareEncodingInfo encoding)
+        {
+            // Missing if undetected
+            if (encoding == null)
+                return;
+
+            if (encoding.Name == null)
+                throw new ValidationException("Missing encoding name");
+
+            if (encoding.Name.Length > 0 && encoding.Data == null)
+                throw new ValidationException("Missing encoding data");
         }
 
         private void Validate(SoftwareHashInfo hash, string basePath)
