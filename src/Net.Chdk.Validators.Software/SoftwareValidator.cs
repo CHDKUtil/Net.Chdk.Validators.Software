@@ -4,6 +4,7 @@ using Net.Chdk.Providers.Crypto;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -97,6 +98,18 @@ namespace Net.Chdk.Validators.Software
             // Empty in final
             if (build.Status == null)
                 throw new ValidationException("Null build status");
+
+            if (build.Changeset != null)
+            {
+                try
+                {
+                    ulong.Parse(build.Changeset, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                }
+                catch
+                {
+                    throw new ValidationException("Invalid build changeset");
+                }
+            }
         }
 
         private static void Validate(SoftwareCompilerInfo compiler)
