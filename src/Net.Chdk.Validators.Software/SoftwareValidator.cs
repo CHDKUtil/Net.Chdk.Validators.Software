@@ -13,12 +13,12 @@ namespace Net.Chdk.Validators.Software
     {
         private static readonly string[] SecureHashes = new[] { "sha256", "sha384", "sha512" };
 
-        private IBootProvider BootProvider { get; }
+        private IBootProviderResolver BootProviderResolver { get; }
         private IHashProvider HashProvider { get; }
 
-        public SoftwareValidator(IBootProvider bootProvider, IHashProvider hashProvider)
+        public SoftwareValidator(IBootProviderResolver bootProviderResolver, IHashProvider hashProvider)
         {
-            BootProvider = bootProvider;
+            BootProviderResolver = bootProviderResolver;
             HashProvider = hashProvider;
         }
 
@@ -34,7 +34,7 @@ namespace Net.Chdk.Validators.Software
             Validate(software.Compiler);
             Validate(software.Source);
             Validate(software.Encoding);
-            Validate(software.Hash, basePath);
+            Validate(software.Hash, basePath, software.Product.Category);
         }
 
         private static void Validate(Version version)
@@ -53,6 +53,9 @@ namespace Net.Chdk.Validators.Software
 
             if (string.IsNullOrEmpty(product.Name))
                 throw new ValidationException("Missing product name");
+
+            if (string.IsNullOrEmpty(product.Category))
+                throw new ValidationException("Missing product category");
 
             if (product.Version == null)
                 throw new ValidationException("Null product version");
@@ -138,7 +141,7 @@ namespace Net.Chdk.Validators.Software
                 throw new ValidationException("Missing encoding data");
         }
 
-        private void Validate(SoftwareHashInfo hash, string basePath)
+        private void Validate(SoftwareHashInfo hash, string basePath, string categoryName)
         {
             if (hash == null)
                 throw new ValidationException("Null hash");
@@ -149,11 +152,11 @@ namespace Net.Chdk.Validators.Software
             if (!SecureHashes.Contains(hash.Name))
                 throw new ValidationException("Invalid hash name");
 
-            if (!Validate(hash.Values, hash.Name, basePath))
+            if (!Validate(hash.Values, hash.Name, basePath, categoryName))
                 throw new ValidationException("Mismatching hash");
         }
 
-        private bool Validate(IDictionary<string, string> hashValues, string hashName, string basePath)
+        private bool Validate(IDictionary<string, string> hashValues, string hashName, string basePath, string categoryName)
         {
             if (hashValues == null)
                 return false;
@@ -161,7 +164,11 @@ namespace Net.Chdk.Validators.Software
             if (hashValues.Count == 0)
                 return false;
 
-            if (!hashValues.Keys.Contains(BootProvider.FileName, StringComparer.InvariantCultureIgnoreCase))
+            var bootProvider = BootProviderResolver.GetBootProvider(categoryName);
+            if (bootProvider == null)
+                return false;
+
+            if (!hashValues.Keys.Contains(bootProvider.FileName, StringComparer.InvariantCultureIgnoreCase))
                 return false;
 
             foreach (var kvp in hashValues)
