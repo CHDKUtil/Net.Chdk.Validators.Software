@@ -93,6 +93,10 @@
       <Project>{5A6B4079-63EF-42BC-BAF8-F6C3480A4EC6}</Project>
       <Name>Net.Chdk.Providers.Crypto.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Net.Chdk.Providers.Software.Core\src\Net.Chdk.Providers.Software.Core\Net.Chdk.Providers.Software.Core.csproj">
+      <Project>{F763A515-BDB0-4088-8B23-15B02C094485}</Project>
+      <Name>Net.Chdk.Providers.Software.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Net.Chdk.Validators.Base\src\Net.Chdk.Validators.Base\Net.Chdk.Validators.Base.csproj">
       <Project>{080D6A9C-DCBD-4930-971C-1061031C1A8F}</Project>
       <Name>Net.Chdk.Validators.Base</Name>
