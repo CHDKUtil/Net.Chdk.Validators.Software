@@ -70,6 +70,9 @@ namespace Net.Chdk.Validators.Software
         {
             var modulesPath = modulesProvider.Path;
             var path = Path.Combine(basePath, modulesPath);
+            if (!Directory.Exists(path))
+                ThrowValidationException("Missing {0}", path);
+
             var pattern = string.Format("*{0}", modulesProvider.Extension);
             var files = Directory.EnumerateFiles(path, pattern);
             foreach (var file in files)
