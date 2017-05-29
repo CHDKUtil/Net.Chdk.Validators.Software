@@ -1,33 +1,33 @@
 ﻿using Net.Chdk.Model.Software;
 using Net.Chdk.Providers.Boot;
-using Net.Chdk.Providers.Crypto;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 
 namespace Net.Chdk.Validators.Software
 {
-    sealed class SoftwareValidator : IValidator<SoftwareInfo>
+    abstract class SoftwareValidator<T> : Validator<T>
     {
-        private static readonly string[] SecureHashes = new[] { "sha256", "sha384", "sha512" };
+        protected IValidator<SoftwareHashInfo> HashValidator { get; }
 
+        protected SoftwareValidator(IValidator<SoftwareHashInfo> hashValidator)
+        {
+            HashValidator = hashValidator;
+        }
+    }
+
+    sealed class SoftwareValidator : SoftwareValidator<SoftwareInfo>
+    {
         private IBootProviderResolver BootProviderResolver { get; }
-        private IHashProvider HashProvider { get; }
 
-        public SoftwareValidator(IBootProviderResolver bootProviderResolver, IHashProvider hashProvider)
+        public SoftwareValidator(IBootProviderResolver bootProviderResolver, IValidator<SoftwareHashInfo> hashValidator)
+            : base(hashValidator)
         {
             BootProviderResolver = bootProviderResolver;
-            HashProvider = hashProvider;
         }
 
-        public void Validate(SoftwareInfo software, string basePath)
+        protected override void DoValidate(SoftwareInfo software, string basePath)
         {
-            if (software == null)
-                throw new ArgumentNullException(nameof(software));
-
             Validate(software.Version);
             Validate(software.Product);
             Validate(software.Camera);
@@ -36,15 +36,6 @@ namespace Net.Chdk.Validators.Software
             Validate(software.Source);
             Validate(software.Encoding);
             Validate(software.Hash, basePath, software.Product.Category);
-        }
-
-        private static void Validate(Version version)
-        {
-            if (version == null)
-                throw new ValidationException("Null version");
-
-            if (version.Major < 1 || version.Minor < 0)
-                throw new ValidationException("Invalid version");
         }
 
         private static void Validate(SoftwareProductInfo product)
@@ -64,11 +55,7 @@ namespace Net.Chdk.Validators.Software
             if (product.Version.Major < 0 || product.Version.Minor < 0)
                 throw new ValidationException("Invalid product version");
 
-            if (product.Created == null)
-                throw new ValidationException("Null product created");
-
-            if (product.Created.Value < new DateTime(2000, 1, 1) || product.Created.Value > DateTime.Now)
-                throw new ValidationException("Invalid product created");
+            ValidateCreated(product.Created, () => "product");
 
             if (product.Language == null)
                 throw new ValidationException("Invalid product language");
@@ -99,17 +86,7 @@ namespace Net.Chdk.Validators.Software
             if (build.Status == null)
                 throw new ValidationException("Null build status");
 
-            if (build.Changeset != null)
-            {
-                try
-                {
-                    ulong.Parse(build.Changeset, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-                }
-                catch
-                {
-                    throw new ValidationException("Invalid build changeset");
-                }
-            }
+            ValidateChangeset(build.Changeset, () => "build");
         }
 
         private static void Validate(SoftwareCompilerInfo compiler)
@@ -157,60 +134,17 @@ namespace Net.Chdk.Validators.Software
         private void Validate(SoftwareHashInfo hash, string basePath, string categoryName)
         {
             if (hash == null)
-                throw new ValidationException("Null hash");
-
-            if (string.IsNullOrEmpty(hash.Name))
-                throw new ValidationException("Missing hash name");
-
-            if (!SecureHashes.Contains(hash.Name))
-                throw new ValidationException("Invalid hash name");
-
-            if (!Validate(hash.Values, hash.Name, basePath, categoryName))
-                throw new ValidationException("Mismatching hash");
-        }
-
-        private bool Validate(IDictionary<string, string> hashValues, string hashName, string basePath, string categoryName)
-        {
-            if (hashValues == null)
-                return false;
-
-            if (hashValues.Count == 0)
-                return false;
+                ThrowValidationException("Null hash");
 
             var bootProvider = BootProviderResolver.GetBootProvider(categoryName);
             if (bootProvider == null)
-                return false;
+                ThrowValidationException("Missing {0} boot provider", categoryName);
 
-            if (!hashValues.Keys.Contains(bootProvider.FileName, StringComparer.InvariantCultureIgnoreCase))
-                return false;
+            HashValidator.Validate(hash, basePath);
 
-            foreach (var kvp in hashValues)
-            {
-                if (string.IsNullOrEmpty(kvp.Key))
-                    return false;
-
-                if (string.IsNullOrEmpty(kvp.Value))
-                    return false;
-
-                var fileName = kvp.Key.ToUpperInvariant();
-                var filePath = Path.Combine(basePath, fileName);
-                if (!File.Exists(filePath))
-                    return false;
-
-                var hashString = GetHashString(filePath, hashName);
-                if (!hashString.Equals(kvp.Value))
-                    return false;
-            }
-
-            return true;
-        }
-
-        private string GetHashString(string filePath, string hashName)
-        {
-            using (var stream = File.OpenRead(filePath))
-            {
-                return HashProvider.GetHashString(stream, hashName);
-            }
+            var fileName = bootProvider.FileName;
+            if (!hash.Values.Keys.Contains(fileName, StringComparer.InvariantCultureIgnoreCase))
+                ThrowValidationException("Missing {0}", fileName);
         }
     }
 }

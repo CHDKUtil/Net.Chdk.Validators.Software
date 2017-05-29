@@ -74,7 +74,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ModulesValidator.cs" />
     <Compile Include="ServiceCollectionExtensions.cs" />
+    <Compile Include="SoftwareHashValidator.cs" />
     <Compile Include="SoftwareValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -90,6 +92,10 @@
     <ProjectReference Include="..\..\..\Net.Chdk.Providers.Crypto.Core\src\Net.Chdk.Providers.Crypto.Core\Net.Chdk.Providers.Crypto.Core.csproj">
       <Project>{5A6B4079-63EF-42BC-BAF8-F6C3480A4EC6}</Project>
       <Name>Net.Chdk.Providers.Crypto.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Net.Chdk.Validators.Base\src\Net.Chdk.Validators.Base\Net.Chdk.Validators.Base.csproj">
+      <Project>{080D6A9C-DCBD-4930-971C-1061031C1A8F}</Project>
+      <Name>Net.Chdk.Validators.Base</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Net.Chdk.Validators.Core\src\Net.Chdk.Validators.Core\Net.Chdk.Validators.Core.csproj">
       <Project>{850646a6-01ce-48d5-9868-0d1cfc4f48d5}</Project>
