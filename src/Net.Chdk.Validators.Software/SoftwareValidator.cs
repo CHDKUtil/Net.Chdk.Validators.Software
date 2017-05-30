@@ -26,7 +26,7 @@ namespace Net.Chdk.Validators.Software
             BootProviderResolver = bootProviderResolver;
         }
 
-        protected override void DoValidate(SoftwareInfo software, string basePath)
+        protected override void DoValidate(SoftwareInfo software, string basePath, IProgress<double> progress)
         {
             Validate(software.Version);
             Validate(software.Product);
@@ -35,7 +35,7 @@ namespace Net.Chdk.Validators.Software
             Validate(software.Compiler);
             Validate(software.Source);
             Validate(software.Encoding);
-            Validate(software.Hash, basePath, software.Product.Category);
+            Validate(software.Hash, basePath, software.Product.Category, progress);
         }
 
         private static void Validate(SoftwareProductInfo product)
@@ -131,7 +131,7 @@ namespace Net.Chdk.Validators.Software
                 throw new ValidationException("Missing encoding data");
         }
 
-        private void Validate(SoftwareHashInfo hash, string basePath, string categoryName)
+        private void Validate(SoftwareHashInfo hash, string basePath, string categoryName, IProgress<double> progress)
         {
             if (hash == null)
                 ThrowValidationException("Null hash");
@@ -140,7 +140,7 @@ namespace Net.Chdk.Validators.Software
             if (bootProvider == null)
                 ThrowValidationException("Missing {0} boot provider", categoryName);
 
-            HashValidator.Validate(hash, basePath);
+            HashValidator.Validate(hash, basePath, progress);
 
             var fileName = bootProvider.FileName;
             if (!hash.Values.Keys.Contains(fileName, StringComparer.InvariantCultureIgnoreCase))

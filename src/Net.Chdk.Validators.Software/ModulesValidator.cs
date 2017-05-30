@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Linq;
 
 namespace Net.Chdk.Validators.Software
 {
@@ -17,11 +18,11 @@ namespace Net.Chdk.Validators.Software
             ModuleProviderResolver = moduleProviderResolver;
         }
 
-        protected override void DoValidate(ModulesInfo modules, string basePath)
+        protected override void DoValidate(ModulesInfo modules, string basePath, IProgress<double> progress)
         {
             Validate(modules.Version);
             Validate(modules.ProductName);
-            Validate(modules.ProductName, modules.Modules, basePath);
+            Validate(modules.ProductName, modules.Modules, basePath, progress);
         }
 
         private static void Validate(string productName)
@@ -30,17 +31,25 @@ namespace Net.Chdk.Validators.Software
                 throw new ValidationException("Missing product name");
         }
 
-        private void Validate(string productName, IDictionary<string, ModuleInfo> modules, string basePath)
+        private void Validate(string productName, IDictionary<string, ModuleInfo> modules, string basePath, IProgress<double> progress)
         {
             if (modules == null)
                 ThrowValidationException("Null modules");
 
+            var count = modules
+                .SelectMany(kvp => kvp.Value.Hash.Values)
+                .Count();
+            var index = 0;
             var values = new Dictionary<string, string>();
             foreach (var kvp in modules)
             {
-                Validate(kvp.Key, kvp.Value, basePath);
+                Validate(kvp.Key, kvp.Value, basePath, progress);
                 foreach (var kvp2 in kvp.Value.Hash.Values)
+                {
                     values.Add(kvp2.Key, kvp2.Value);
+                    if (progress != null)
+                        progress.Report((double)(++index) / count);
+                }
             }
 
             var moduleProvider = ModuleProviderResolver.GetModuleProvider(productName);
@@ -50,7 +59,7 @@ namespace Net.Chdk.Validators.Software
             Validate(moduleProvider, values, basePath);
         }
 
-        private void Validate(string name, ModuleInfo module, string basePath)
+        private void Validate(string name, ModuleInfo module, string basePath, IProgress<double> progress)
         {
             if (string.IsNullOrEmpty(name))
                 ThrowValidationException("Missing module name");
@@ -63,7 +72,7 @@ namespace Net.Chdk.Validators.Software
             ValidateCreated(module.Created, formatter);
             ValidateChangeset(module.Changeset, formatter);
 
-            HashValidator.Validate(module.Hash, basePath);
+            HashValidator.Validate(module.Hash, basePath, progress);
         }
 
         private static void Validate(IModuleProvider moduleProvider, Dictionary<string, string> values, string basePath)

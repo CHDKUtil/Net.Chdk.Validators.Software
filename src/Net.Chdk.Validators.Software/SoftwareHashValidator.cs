@@ -1,5 +1,6 @@
 ﻿using Net.Chdk.Model.Software;
 using Net.Chdk.Providers.Crypto;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace Net.Chdk.Validators.Software
             HashProvider = hashProvider;
         }
 
-        protected override void DoValidate(SoftwareHashInfo hash, string basePath)
+        protected override void DoValidate(SoftwareHashInfo hash, string basePath, IProgress<double> _)
         {
             if (string.IsNullOrEmpty(hash.Name))
                 throw new ValidationException("Missing hash name");
