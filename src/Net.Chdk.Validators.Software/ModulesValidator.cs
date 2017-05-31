@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace Net.Chdk.Validators.Software
 {
@@ -18,11 +19,11 @@ namespace Net.Chdk.Validators.Software
             ModuleProviderResolver = moduleProviderResolver;
         }
 
-        protected override void DoValidate(ModulesInfo modules, string basePath, IProgress<double> progress)
+        protected override void DoValidate(ModulesInfo modules, string basePath, IProgress<double> progress, CancellationToken token)
         {
             Validate(modules.Version);
             Validate(modules.ProductName);
-            Validate(modules.ProductName, modules.Modules, basePath, progress);
+            Validate(modules.ProductName, modules.Modules, basePath, progress, token);
         }
 
         private static void Validate(string productName)
@@ -31,10 +32,12 @@ namespace Net.Chdk.Validators.Software
                 throw new ValidationException("Missing product name");
         }
 
-        private void Validate(string productName, IDictionary<string, ModuleInfo> modules, string basePath, IProgress<double> progress)
+        private void Validate(string productName, IDictionary<string, ModuleInfo> modules, string basePath, IProgress<double> progress, CancellationToken token)
         {
             if (modules == null)
                 ThrowValidationException("Null modules");
+
+            token.ThrowIfCancellationRequested();
 
             var count = modules
                 .SelectMany(kvp => kvp.Value.Hash.Values)
@@ -43,7 +46,7 @@ namespace Net.Chdk.Validators.Software
             var values = new Dictionary<string, string>();
             foreach (var kvp in modules)
             {
-                Validate(kvp.Key, kvp.Value, basePath, progress);
+                Validate(kvp.Key, kvp.Value, basePath, progress, token);
                 foreach (var kvp2 in kvp.Value.Hash.Values)
                 {
                     values.Add(kvp2.Key, kvp2.Value);
@@ -59,7 +62,7 @@ namespace Net.Chdk.Validators.Software
             Validate(moduleProvider, values, basePath);
         }
 
-        private void Validate(string name, ModuleInfo module, string basePath, IProgress<double> progress)
+        private void Validate(string name, ModuleInfo module, string basePath, IProgress<double> progress, CancellationToken token)
         {
             if (string.IsNullOrEmpty(name))
                 ThrowValidationException("Missing module name");
@@ -72,7 +75,7 @@ namespace Net.Chdk.Validators.Software
             ValidateCreated(module.Created, formatter);
             ValidateChangeset(module.Changeset, formatter);
 
-            HashValidator.Validate(module.Hash, basePath, progress);
+            HashValidator.Validate(module.Hash, basePath, progress, token);
         }
 
         private static void Validate(IModuleProvider moduleProvider, Dictionary<string, string> values, string basePath)

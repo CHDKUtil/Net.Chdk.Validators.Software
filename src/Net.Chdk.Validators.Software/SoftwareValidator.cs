@@ -3,6 +3,7 @@ using Net.Chdk.Providers.Boot;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading;
 
 namespace Net.Chdk.Validators.Software
 {
@@ -26,7 +27,7 @@ namespace Net.Chdk.Validators.Software
             BootProviderResolver = bootProviderResolver;
         }
 
-        protected override void DoValidate(SoftwareInfo software, string basePath, IProgress<double> progress)
+        protected override void DoValidate(SoftwareInfo software, string basePath, IProgress<double> progress, CancellationToken token)
         {
             Validate(software.Version);
             Validate(software.Product);
@@ -35,7 +36,7 @@ namespace Net.Chdk.Validators.Software
             Validate(software.Compiler);
             Validate(software.Source);
             Validate(software.Encoding);
-            Validate(software.Hash, basePath, software.Product.Category, progress);
+            Validate(software.Hash, basePath, software.Product.Category, progress, token);
         }
 
         private static void Validate(SoftwareProductInfo product)
@@ -131,7 +132,7 @@ namespace Net.Chdk.Validators.Software
                 throw new ValidationException("Missing encoding data");
         }
 
-        private void Validate(SoftwareHashInfo hash, string basePath, string categoryName, IProgress<double> progress)
+        private void Validate(SoftwareHashInfo hash, string basePath, string categoryName, IProgress<double> progress, CancellationToken token)
         {
             if (hash == null)
                 ThrowValidationException("Null hash");
@@ -140,7 +141,7 @@ namespace Net.Chdk.Validators.Software
             if (bootProvider == null)
                 ThrowValidationException("Missing {0} boot provider", categoryName);
 
-            HashValidator.Validate(hash, basePath, progress);
+            HashValidator.Validate(hash, basePath, progress, token);
 
             var fileName = bootProvider.FileName;
             if (!hash.Values.Keys.Contains(fileName, StringComparer.InvariantCultureIgnoreCase))

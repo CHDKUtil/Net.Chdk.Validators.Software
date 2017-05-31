@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace Net.Chdk.Validators.Software
 {
@@ -18,7 +19,7 @@ namespace Net.Chdk.Validators.Software
             HashProvider = hashProvider;
         }
 
-        protected override void DoValidate(SoftwareHashInfo hash, string basePath, IProgress<double> _)
+        protected override void DoValidate(SoftwareHashInfo hash, string basePath, IProgress<double> _, CancellationToken token)
         {
             if (string.IsNullOrEmpty(hash.Name))
                 throw new ValidationException("Missing hash name");
@@ -33,10 +34,10 @@ namespace Net.Chdk.Validators.Software
                 throw new ValidationException("Missing hash values");
 
             foreach (var kvp in hash.Values)
-                Validate(kvp.Key, kvp.Value, basePath, hash.Name);
+                Validate(kvp.Key, kvp.Value, basePath, hash.Name, token);
         }
 
-        private void Validate(string key, string value, string basePath, string hashName)
+        private void Validate(string key, string value, string basePath, string hashName, CancellationToken token)
         {
             if (string.IsNullOrEmpty(key))
                 ThrowValidationException("Missing file path");
@@ -51,6 +52,8 @@ namespace Net.Chdk.Validators.Software
             var filePath = Path.Combine(basePath, fileName);
             if (!File.Exists(filePath))
                 ThrowValidationException("Missing {0}", fileName);
+
+            token.ThrowIfCancellationRequested();
 
             var hashString = GetHashString(filePath, hashName);
             if (!hashString.Equals(value))
