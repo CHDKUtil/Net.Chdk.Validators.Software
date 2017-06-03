@@ -30,13 +30,23 @@ namespace Net.Chdk.Validators.Software
         protected override void DoValidate(SoftwareInfo software, string basePath, IProgress<double> progress, CancellationToken token)
         {
             Validate(software.Version);
+            Validate(software.Category);
             Validate(software.Product);
             Validate(software.Camera);
             Validate(software.Build);
             Validate(software.Compiler);
             Validate(software.Source);
             Validate(software.Encoding);
-            Validate(software.Hash, basePath, software.Product.Category, progress, token);
+            Validate(software.Hash, basePath, software.Category.Name, progress, token);
+        }
+
+        private void Validate(SoftwareCategoryInfo category)
+        {
+            if (category == null)
+                throw new ValidationException("Null category");
+
+            if (string.IsNullOrEmpty(category.Name))
+                throw new ValidationException("Missing category name");
         }
 
         private static void Validate(SoftwareProductInfo product)
@@ -46,9 +56,6 @@ namespace Net.Chdk.Validators.Software
 
             if (string.IsNullOrEmpty(product.Name))
                 throw new ValidationException("Missing product name");
-
-            if (string.IsNullOrEmpty(product.Category))
-                throw new ValidationException("Missing product category");
 
             if (product.Version == null)
                 throw new ValidationException("Null product version");
