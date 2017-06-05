@@ -80,6 +80,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Net.Chdk.Model.Category\src\Net.Chdk.Model.Category\Net.Chdk.Model.Category.csproj">
+      <Project>{732DF01F-2379-4244-ABA1-48BA99EA1883}</Project>
+      <Name>Net.Chdk.Model.Category</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Net.Chdk.Model.Software\src\Net.Chdk.Model.Software\Net.Chdk.Model.Software.csproj">
       <Project>{7f492ad5-c9e5-4e13-9587-d0b88ba8d209}</Project>
       <Name>Net.Chdk.Model.Software</Name>

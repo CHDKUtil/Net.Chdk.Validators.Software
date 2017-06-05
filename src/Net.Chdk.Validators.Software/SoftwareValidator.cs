@@ -1,4 +1,5 @@
-﻿using Net.Chdk.Model.Software;
+﻿using Net.Chdk.Model.Category;
+using Net.Chdk.Model.Software;
 using Net.Chdk.Providers.Boot;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -40,7 +41,7 @@ namespace Net.Chdk.Validators.Software
             Validate(software.Hash, basePath, software.Category.Name, progress, token);
         }
 
-        private void Validate(SoftwareCategoryInfo category)
+        private void Validate(CategoryInfo category)
         {
             if (category == null)
                 throw new ValidationException("Null category");
