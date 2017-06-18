@@ -22,13 +22,16 @@ namespace Net.Chdk.Validators.Software
         protected override void DoValidate(ModulesInfo modules, string basePath, IProgress<double> progress, CancellationToken token)
         {
             Validate(modules.Version);
-            Validate(modules.ProductName);
-            Validate(modules.ProductName, modules.Modules, basePath, progress, token);
+            Validate(modules.Product);
+            Validate(modules.Product.Name, modules.Modules, basePath, progress, token);
         }
 
-        private static void Validate(string productName)
+        private static void Validate(ModulesProductInfo product)
         {
-            if (string.IsNullOrEmpty(productName))
+            if (product == null)
+                throw new ValidationException("Null product");
+
+            if (string.IsNullOrEmpty(product.Name))
                 throw new ValidationException("Missing product name");
         }
 
