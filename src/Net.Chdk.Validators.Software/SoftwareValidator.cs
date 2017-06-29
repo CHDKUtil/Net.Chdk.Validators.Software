@@ -67,6 +67,9 @@ namespace Net.Chdk.Validators.Software
             if (product.VersionPrefix != null && product.VersionPrefix.Length == 0)
                 throw new ValidationException("Invalid product versionPrefix");
 
+            if (product.VersionSuffix != null && product.VersionSuffix.Length == 0)
+                throw new ValidationException("Invalid product versionSuffix");
+
             ValidateCreated(product.Created, () => "product");
 
             if (product.Language == null)
