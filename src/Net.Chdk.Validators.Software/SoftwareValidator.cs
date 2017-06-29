@@ -107,6 +107,9 @@ namespace Net.Chdk.Validators.Software
             if (string.IsNullOrEmpty(compiler.Name))
                 throw new ValidationException("Missing compiler name");
 
+            if (compiler.Platform != null && compiler.Platform.Length == 0)
+                throw new ValidationException("Missing compiler platform");
+
             if (compiler.Version == null)
                 throw new ValidationException("Null compiler version");
         }
