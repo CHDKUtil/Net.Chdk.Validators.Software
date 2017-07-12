@@ -2,7 +2,7 @@
 using Net.Chdk.Providers.Software;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;    
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -11,12 +11,12 @@ namespace Net.Chdk.Validators.Software
 {
     sealed class ModulesValidator : SoftwareValidator<ModulesInfo>
     {
-        private IModuleProviderResolver ModuleProviderResolver { get; }
+        private IModuleProvider ModuleProvider { get; }
 
-        public ModulesValidator(IModuleProviderResolver moduleProviderResolver, IValidator<SoftwareHashInfo> hashValidator)
+        public ModulesValidator(IModuleProvider moduleProvider, IValidator<SoftwareHashInfo> hashValidator)
             : base(hashValidator)
         {
-            ModuleProviderResolver = moduleProviderResolver;
+            ModuleProvider = moduleProvider;
         }
 
         protected override void DoValidate(ModulesInfo modules, string basePath, IProgress<double> progress, CancellationToken token)
@@ -58,11 +58,7 @@ namespace Net.Chdk.Validators.Software
                 }
             }
 
-            var moduleProvider = ModuleProviderResolver.GetModuleProvider(productName);
-            if (moduleProvider == null)
-                ThrowValidationException("Missing {0} module provider", productName);
-
-            Validate(moduleProvider, values, basePath);
+            Validate(productName, values, basePath);
         }
 
         private void Validate(string name, ModuleInfo module, string basePath, IProgress<double> progress, CancellationToken token)
@@ -81,14 +77,15 @@ namespace Net.Chdk.Validators.Software
             HashValidator.Validate(module.Hash, basePath, progress, token);
         }
 
-        private static void Validate(IModuleProvider moduleProvider, Dictionary<string, string> values, string basePath)
+        private void Validate(string productName, Dictionary<string, string> values, string basePath)
         {
-            var modulesPath = moduleProvider.Path;
+            var modulesPath = ModuleProvider.GetPath(productName);
             var path = Path.Combine(basePath, modulesPath);
             if (!Directory.Exists(path))
                 ThrowValidationException("Missing {0}", path);
 
-            var pattern = string.Format("*{0}", moduleProvider.Extension);
+            var extension = ModuleProvider.GetExtension(productName);
+            var pattern = string.Format("*{0}", extension);
             var files = Directory.EnumerateFiles(path, pattern);
             foreach (var file in files)
             {
