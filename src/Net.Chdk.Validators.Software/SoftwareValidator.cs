@@ -20,12 +20,12 @@ namespace Net.Chdk.Validators.Software
 
     sealed class SoftwareValidator : SoftwareValidator<SoftwareInfo>
     {
-        private IBootProviderResolver BootProviderResolver { get; }
+        private IBootProvider BootProvider { get; }
 
-        public SoftwareValidator(IBootProviderResolver bootProviderResolver, IValidator<SoftwareHashInfo> hashValidator)
+        public SoftwareValidator(IBootProvider bootProvider, IValidator<SoftwareHashInfo> hashValidator)
             : base(hashValidator)
         {
-            BootProviderResolver = bootProviderResolver;
+            BootProvider = bootProvider;
         }
 
         protected override void DoValidate(SoftwareInfo software, string basePath, IProgress<double> progress, CancellationToken token)
@@ -154,13 +154,9 @@ namespace Net.Chdk.Validators.Software
             if (hash == null)
                 ThrowValidationException("Null hash");
 
-            var bootProvider = BootProviderResolver.GetBootProvider(categoryName);
-            if (bootProvider == null)
-                ThrowValidationException("Missing {0} boot provider", categoryName);
-
             HashValidator.Validate(hash, basePath, progress, token);
 
-            var fileName = bootProvider.FileName;
+            var fileName = BootProvider.GetFileName(categoryName);
             if (!hash.Values.Keys.Contains(fileName, StringComparer.InvariantCultureIgnoreCase))
                 ThrowValidationException("Missing {0}", fileName);
         }
