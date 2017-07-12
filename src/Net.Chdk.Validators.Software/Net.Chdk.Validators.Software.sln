@@ -1,21 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Net.Chdk.Validators.Software", "Net.Chdk.Validators.Software.csproj", "{C83AEE74-9C2E-4518-9C04-86080FFFCFA1}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Net.Chdk.Shared", "..\..\..\Net.Chdk.Core\src\Net.Chdk.Shared\Net.Chdk.Shared.shproj", "{83C6A77C-3286-4F5F-B628-3B971097AD05}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Net.Chdk.Validators.Core", "..\..\..\Net.Chdk.Validators.Core\src\Net.Chdk.Validators.Core\Net.Chdk.Validators.Core.csproj", "{850646A6-01CE-48D5-9868-0D1CFC4F48D5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Net.Chdk.Validators.Base", "..\..\..\Net.Chdk.Validators.Base\src\Net.Chdk.Validators.Base\Net.Chdk.Validators.Base.csproj", "{080D6A9C-DCBD-4930-971C-1061031C1A8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Net.Chdk.Validators.Software", "Net.Chdk.Validators.Software.csproj", "{C83AEE74-9C2E-4518-9C04-86080FFFCFA1}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\..\..\Net.Chdk.Core\src\Net.Chdk.Shared\Net.Chdk.Shared.projitems*{080d6a9c-dcbd-4930-971c-1061031c1a8f}*SharedItemsImports = 4
-		..\..\..\Net.Chdk.Core\src\Net.Chdk.Shared\Net.Chdk.Shared.projitems*{83c6a77c-3286-4f5f-b628-3b971097ad05}*SharedItemsImports = 13
-		..\..\..\Net.Chdk.Core\src\Net.Chdk.Shared\Net.Chdk.Shared.projitems*{850646a6-01ce-48d5-9868-0d1cfc4f48d5}*SharedItemsImports = 4
 		..\..\..\Net.Chdk.Core\src\Net.Chdk.Shared\Net.Chdk.Shared.projitems*{c83aee74-9c2e-4518-9c04-86080fffcfa1}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,14 +18,6 @@ Global
 		{C83AEE74-9C2E-4518-9C04-86080FFFCFA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C83AEE74-9C2E-4518-9C04-86080FFFCFA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C83AEE74-9C2E-4518-9C04-86080FFFCFA1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{850646A6-01CE-48D5-9868-0D1CFC4F48D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{850646A6-01CE-48D5-9868-0D1CFC4F48D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{850646A6-01CE-48D5-9868-0D1CFC4F48D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{850646A6-01CE-48D5-9868-0D1CFC4F48D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{080D6A9C-DCBD-4930-971C-1061031C1A8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{080D6A9C-DCBD-4930-971C-1061031C1A8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{080D6A9C-DCBD-4930-971C-1061031C1A8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{080D6A9C-DCBD-4930-971C-1061031C1A8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

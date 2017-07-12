@@ -157,7 +157,7 @@ namespace Net.Chdk.Validators.Software
             HashValidator.Validate(hash, basePath, progress, token);
 
             var fileName = BootProvider.GetFileName(categoryName);
-            if (!hash.Values.Keys.Contains(fileName, StringComparer.InvariantCultureIgnoreCase))
+            if (!hash.Values.Keys.Contains(fileName, StringComparer.OrdinalIgnoreCase))
                 ThrowValidationException("Missing {0}", fileName);
         }
     }
