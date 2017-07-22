@@ -8,8 +8,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Product>CHIMP</Product>
+    <Authors>Dmitry Shechtman</Authors>
     <Copyright>Copyright © 2017 Dmitry Shechtman</Copyright>
   </PropertyGroup>
 
@@ -17,7 +18,6 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Net.Chdk.Validators.Software</Title>
     <PackageVersion>$(Version)-alpha</PackageVersion>
-    <Authors>Dmitry Shechtman</Authors>
     <PackageIconUrl>https://raw.githubusercontent.com/CHDKUtil/CHIMP/master/tiny.png</PackageIconUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/CHDKUtil/Net.Chdk.Validators.Software/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/CHDKUtil/Net.Chdk.Validators.Software</PackageProjectUrl>
@@ -37,16 +37,9 @@
 
   <ItemGroup>
     <PackageReference Include="microsoft.extensions.dependencyinjection.abstractions" Version="1.1.1" />
-    <PackageReference Include="Net.Chdk.Model.Software" Version="0.1.0-alpha" />
-    <PackageReference Include="Net.Chdk.Providers.Boot.Core" Version="0.1.0-alpha">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Net.Chdk.Providers.Crypto.Core" Version="0.1.0-alpha">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Net.Chdk.Providers.Software.Core" Version="0.2.0-alpha">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Net.Chdk.Providers.Boot.Core" Version="0.1.0-alpha" />
+    <PackageReference Include="Net.Chdk.Providers.Crypto.Core" Version="0.1.0-alpha" />
+    <PackageReference Include="Net.Chdk.Providers.Software.Core" Version="0.4.0-alpha" />
     <PackageReference Include="Net.Chdk.Validators.Base" Version="0.1.0-alpha" />
     <PackageReference Include="system.componentmodel.annotations" Version="4.3.0" />
   </ItemGroup>
